@@ -1,0 +1,11 @@
+runtime: python39 # You can change this to python310, python311, etc. if preferred.
+entrypoint: gunicorn -b :$PORT main:app
+
+# Optional: handlers for static files (if you want App Engine to serve them directly)
+# If you don't include this, Flask will still serve static files,
+# but it can be more efficient for App Engine to handle them.
+handlers:
+- url: /static
+  static_dir: static
+- url: /.*
+  script: auto
