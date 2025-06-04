@@ -1,0 +1,13 @@
+steps:
+  # This step uses the Google Cloud SDK to deploy the application to App Engine.
+  # It assumes that the App Engine configuration is defined in `app.yaml`.
+  # The '--quiet' flag is used to prevent interactive prompts during deployment.
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  args: ['gcloud', 'app', 'deploy', 'app.yaml', '--quiet']
+
+# Optional: You can specify a timeout for the build.
+# timeout: '1200s' # 20 minutes
+
+# Optional: You can specify service account permissions if needed,
+# but for App Engine deployment, the default Cloud Build service account
+# usually has sufficient permissions if enabled correctly in your GCP project.
