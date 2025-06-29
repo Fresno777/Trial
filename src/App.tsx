@@ -5,9 +5,20 @@ import { StatsGrid } from './components/StatsGrid';
 import { ChartSection } from './components/ChartSection';
 import { ActivityFeed } from './components/ActivityFeed';
 import { TaskList } from './components/TaskList';
+import { SearchModal } from './components/SearchModal';
+import { NotificationPanel } from './components/NotificationPanel';
+import { UserProfile } from './components/UserProfile';
 
 function App() {
   const [isDark, setIsDark] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: 'New message from Sarah', message: 'Project update is ready for review', time: '2 min ago', read: false },
+    { id: 2, title: 'Server maintenance complete', message: 'All systems are now operational', time: '1 hour ago', read: false },
+    { id: 3, title: 'Weekly report generated', message: 'Performance metrics are available', time: '3 hours ago', read: true },
+  ]);
 
   useEffect(() => {
     if (isDark) {
@@ -16,6 +27,20 @@ function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDark]);
+
+  const markNotificationAsRead = (id: number) => {
+    setNotifications(prev => 
+      prev.map(notif => 
+        notif.id === id ? { ...notif, read: true } : notif
+      )
+    );
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-blue-900 dark:to-indigo-900 transition-all duration-700">
@@ -26,7 +51,14 @@ function App() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-br from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
-      <Header isDark={isDark} setIsDark={setIsDark} />
+      <Header 
+        isDark={isDark} 
+        setIsDark={setIsDark}
+        onSearchClick={() => setIsSearchOpen(true)}
+        onNotificationClick={() => setIsNotificationOpen(true)}
+        onProfileClick={() => setIsProfileOpen(true)}
+        unreadCount={unreadCount}
+      />
       
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div 
@@ -77,6 +109,20 @@ function App() {
           <TaskList />
         </motion.div>
       </main>
+
+      {/* Modals */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      <NotificationPanel 
+        isOpen={isNotificationOpen} 
+        onClose={() => setIsNotificationOpen(false)}
+        notifications={notifications}
+        onMarkAsRead={markNotificationAsRead}
+        onClearAll={clearAllNotifications}
+      />
+      <UserProfile 
+        isOpen={isProfileOpen} 
+        onClose={() => setIsProfileOpen(false)}
+      />
     </div>
   );
 }

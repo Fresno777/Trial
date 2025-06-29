@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, CheckCircle, AlertCircle, User, Zap } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, User, Zap, ChevronRight } from 'lucide-react';
 
 const activities = [
   {
@@ -12,6 +12,7 @@ const activities = [
     icon: CheckCircle,
     iconColor: 'text-green-500',
     bgColor: 'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20',
+    actionable: true,
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ const activities = [
     icon: AlertCircle,
     iconColor: 'text-yellow-500',
     bgColor: 'from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20',
+    actionable: true,
   },
   {
     id: 3,
@@ -32,6 +34,7 @@ const activities = [
     icon: User,
     iconColor: 'text-blue-500',
     bgColor: 'from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20',
+    actionable: true,
   },
   {
     id: 4,
@@ -42,10 +45,23 @@ const activities = [
     icon: Clock,
     iconColor: 'text-purple-500',
     bgColor: 'from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20',
+    actionable: true,
   },
 ];
 
 export function ActivityFeed() {
+  const [expandedActivity, setExpandedActivity] = useState<number | null>(null);
+
+  const handleActivityClick = (activityId: number) => {
+    console.log('Activity clicked:', activityId);
+    setExpandedActivity(expandedActivity === activityId ? null : activityId);
+  };
+
+  const handleViewAllActivities = () => {
+    console.log('Viewing all activities...');
+    // Here you would navigate to a full activities page
+  };
+
   return (
     <motion.div 
       className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl shadow-xl rounded-2xl p-6 border border-white/20 dark:border-gray-700/50"
@@ -87,9 +103,10 @@ export function ActivityFeed() {
                   />
                 ) : null}
                 <motion.div 
-                  className="relative flex space-x-3 group"
+                  className="relative flex space-x-3 group cursor-pointer"
                   whileHover={{ x: 5 }}
                   transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                  onClick={() => handleActivityClick(activity.id)}
                 >
                   <div>
                     <motion.span 
@@ -101,16 +118,34 @@ export function ActivityFeed() {
                     </motion.span>
                   </div>
                   <div className="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-gray-900 dark:text-white font-semibold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {activity.title}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {activity.description}
                       </p>
+                      {expandedActivity === activity.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-2 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+                        >
+                          <p className="text-xs text-gray-600 dark:text-gray-300">
+                            Additional details about this activity would appear here. 
+                            This could include more context, related actions, or next steps.
+                          </p>
+                        </motion.div>
+                      )}
                     </div>
-                    <div className="text-right text-xs whitespace-nowrap text-gray-400 dark:text-gray-500 font-medium">
-                      {activity.time}
+                    <div className="flex items-center space-x-2">
+                      <div className="text-right text-xs whitespace-nowrap text-gray-400 dark:text-gray-500 font-medium">
+                        {activity.time}
+                      </div>
+                      {activity.actionable && (
+                        <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                      )}
                     </div>
                   </div>
                 </motion.div>
@@ -121,6 +156,7 @@ export function ActivityFeed() {
       </div>
       
       <motion.button
+        onClick={handleViewAllActivities}
         className="w-full mt-4 py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
